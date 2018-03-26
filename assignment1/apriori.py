@@ -17,7 +17,7 @@ getcontext().rounding=ROUND_HALF_UP
 
 # Algorithm apriori
 def apriori(data, support):
-    candidates = list(map(lambda x: frozenset([x]), set(chain(*data))))
+    candidates = set(map(lambda x: frozenset([x]), set(chain(*data))))
     result = dict()
     k = 2
     def scan():
