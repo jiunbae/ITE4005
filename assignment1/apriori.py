@@ -2,6 +2,7 @@
 import argparse
 from collections import defaultdict
 from itertools import combinations, chain
+from decimal import Decimal, getcontext, ROUND_HALF_UP
 
 # argument parser
 parser = argparse.ArgumentParser()
@@ -10,6 +11,8 @@ parser.add_argument("input", help="input file name", type=str)
 parser.add_argument("output", help="output file name", type=str)
 parser.add_argument("confidence", help="minimum confidence", nargs='?', const=1, default=.0, type=float)
 args = parser.parse_args()
+
+getcontext().rounding=ROUND_HALF_UP
 
 def apriori(data, support):
     candidates = list(map(lambda x: frozenset([x]), set(chain(*data))))
@@ -30,21 +33,21 @@ def apriori(data, support):
     return result
 
 def define(freq, transactions, confidence=.0):
-    def support(item):
-        return float(freq[len(item)][item])/len(transactions)
-    
+    f = lambda item: freq[len(item)][item]
+    r = lambda value, k: type(value)(round(Decimal(value), k))
     for k, v in freq.items():
         if k == 1: continue
         for item in v:
             for element in map(frozenset, chain(*[combinations(item, i) for i, e in enumerate(item, 1)])):
                 remain = item.difference(element)
                 if not remain: continue
-                conf = support(item) / support(element)
+                (a, b), (c, d) = f(item).as_integer_ratio(), f(element).as_integer_ratio()
+                conf = (a / b) / (c / d)
                 if conf >= confidence:
-                    yield element, remain, round(freq[len(item)][item] * 100, 2), round(conf * 100, 2)
+                    yield element, remain, r(f(item) * 100, 2), r(conf * 100, 2)
 
 with open(args.input) as f:
-    data = [line.split() for line in f.readlines()]
+    data = [list(map(int, line.split())) for line in f.readlines()]
 
 freq = apriori(data, args.support/100)
 rules = define(freq, data, args.confidence)
