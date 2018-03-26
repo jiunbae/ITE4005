@@ -54,7 +54,7 @@ if __name__ == '__main__':
         data = [list(map(int, line.split())) for line in f.readlines()]
 
     freq = apriori(data, args.support/100)
-    rules = define(freq, data, args.confidence)
+    rules = define(freq, data, args.confidence/100)
 
     with open(args.output, 'w') as f:
         for item, asso, sup, conf in rules:
