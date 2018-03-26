@@ -12,8 +12,10 @@ parser.add_argument("output", help="output file name", type=str)
 parser.add_argument("confidence", help="minimum confidence", nargs='?', const=1, default=.0, type=float)
 args = parser.parse_args()
 
+# set decimal context as ROUND_HALF_UP
 getcontext().rounding=ROUND_HALF_UP
 
+# Algorithm apriori
 def apriori(data, support):
     candidates = list(map(lambda x: frozenset([x]), set(chain(*data))))
     result = dict()
@@ -32,6 +34,7 @@ def apriori(data, support):
         k += 1
     return result
 
+# define rules from frequency map
 def define(freq, transactions, confidence=.0):
     f = lambda item: freq[len(item)][item]
     r = lambda value, k: type(value)(round(Decimal(value), k))
@@ -46,12 +49,13 @@ def define(freq, transactions, confidence=.0):
                 if conf >= confidence:
                     yield element, remain, r(f(item) * 100, 2), r(conf * 100, 2)
 
-with open(args.input) as f:
-    data = [list(map(int, line.split())) for line in f.readlines()]
+if __name__ == '__main__':
+    with open(args.input) as f:
+        data = [list(map(int, line.split())) for line in f.readlines()]
 
-freq = apriori(data, args.support/100)
-rules = define(freq, data, args.confidence)
+    freq = apriori(data, args.support/100)
+    rules = define(freq, data, args.confidence)
 
-with open(args.output, 'w') as f:
-    for item, asso, sup, conf in rules:
-        f.write('{{{}}}\t{{{}}}\t{:.2f}\t{:.2f}\n'.format(','.join(map(str, item)), ','.join(map(str, asso)), sup, conf))
+    with open(args.output, 'w') as f:
+        for item, asso, sup, conf in rules:
+            f.write('{{{}}}\t{{{}}}\t{:.2f}\t{:.2f}\n'.format(','.join(map(str, item)), ','.join(map(str, asso)), sup, conf))
