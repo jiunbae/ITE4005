@@ -17,9 +17,8 @@ getcontext().rounding=ROUND_HALF_UP
 
 # Algorithm apriori
 def apriori(data, support):
-    candidates = set(map(lambda x: frozenset([x]), set(chain(*data))))
-    result = dict()
-    k = 2
+    candidates = {frozenset([x]) for x in set(chain(*data))}
+    result, k = dict(), 2
     def scan():
         count = defaultdict(int)
         for transaction in data:
@@ -30,7 +29,7 @@ def apriori(data, support):
     while candidates:
         filtered = scan()
         result[k - 1] = filtered
-        candidates = set([i.union(j) for i in filtered.keys() for j in filtered.keys() if len(i.union(j)) == k])
+        candidates = {i.union(j) for i in filtered for j in filtered if len(i.union(j)) == k}
         k += 1
     return result
 
@@ -51,11 +50,11 @@ def define(freq, transactions, confidence=.0):
 
 if __name__ == '__main__':
     with open(args.input) as f:
-        data = [list(map(int, line.split())) for line in f.readlines()]
+        data = [line.split() for line in f.readlines()]
 
     freq = apriori(data, args.support/100)
     rules = define(freq, data, args.confidence/100)
 
     with open(args.output, 'w') as f:
         for item, asso, sup, conf in rules:
-            f.write('{{{}}}\t{{{}}}\t{:.2f}\t{:.2f}\n'.format(','.join(map(str, item)), ','.join(map(str, asso)), sup, conf))
+            f.write('{{{}}}\t{{{}}}\t{:.2f}\t{:.2f}\n'.format(','.join(item), ','.join(asso), sup, conf))
