@@ -47,7 +47,7 @@ class DecisionTree():
                 'value': Counter(x[:, -1]).most_common(),
                 'parent': node,
             }
-            terminals.append(child)
+            self.terminals.append(child)
             return child
 
         if not len(l) or not len(r):
