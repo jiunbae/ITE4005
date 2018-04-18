@@ -1,5 +1,6 @@
 from collections import Counter
 from functools import partial
+from random import sample
 
 import numpy as np
 
@@ -9,13 +10,13 @@ class DecisionTree():
     '''Decision Tree
     '''
 
-    def __init__(self, metric):
+    def __init__(self, metric, max_feature=0):
         '''DecisionTree with selected metric
 
         @param: metric          metric for determin tree
         '''
         self.metric = metric().calc if issubclass(metric, Metric) else metric
-        print (self.metric)
+        self.max_feature = max_feature
 
     def _build(self, train, depth=1):
         # split data where value lower than v and else
@@ -25,9 +26,9 @@ class DecisionTree():
         # get index of _applyed minimum
         _mini = lambda uni, idx, i: idx[_apply(uni, i).argmin()]
         # terminal node
-        _terminal = lambda x: Counter(x[:, -1]).most_common()[0][0]
+        _terminal = lambda x: Counter(x[:, -1]).most_common()
         
-        m = np.apply_along_axis(lambda i: _mini(*np.unique(train[:, i], return_index=True), i), 1, np.array([np.arange(self._c-1)]).T)
+        m = np.apply_along_axis(lambda i: _mini(*np.unique(train[:, i], return_index=True), i), 1, np.array([self.features]).T)
         i, j = min(enumerate(m), key=lambda t: self.metric(_split(t[0], train[t[1]][t[0]])))
         l, r = _split(i, train[j][i])
         
@@ -35,7 +36,7 @@ class DecisionTree():
             'index': i,
             'value': train[j][i],
             'left': l,
-            'right': r
+            'right': r,
         }
 
         if not len(l) or not len(r):
@@ -50,7 +51,7 @@ class DecisionTree():
     
     def _predict(self, node, x):
         tar = node['left'] if x[node['index']] < node['value'] else node['right']
-        return self._predict(tar, x) if isinstance(tar, dict) else tar
+        return self._predict(tar, x) if isinstance(tar, dict) else tar[0][0]
     
     def fit(self, X, y, max_depth=32, min_size=0):
         '''fit decision tree to input X, y
@@ -65,6 +66,7 @@ class DecisionTree():
         
         train = np.concatenate([X, np.array([y]).T], axis=1)
         self._r, self._c = train.shape
+        self.features = sorted(sample(range(self._c - 1), self.max_feature if self.max_feature else self._c-1))
         self.tree = self._build(train)
 
     def predict(self, X):
