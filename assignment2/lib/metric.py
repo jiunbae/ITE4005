@@ -22,3 +22,9 @@ class ClassError(Metric):
 class Gini(Metric):
     def calc(self, group):
         return 1.-sum([(v/len(group))**2 for v in Counter(group[:, -1]).values()])
+
+METRICS = {
+    'entropy': Entropy,
+    'error': ClassError,
+    'gini': Gini,
+}
