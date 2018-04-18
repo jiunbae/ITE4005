@@ -17,6 +17,7 @@ class DecisionTree():
         '''
         self.metric = metric().calc if issubclass(metric, Metric) else metric
         self.max_feature = max_feature
+        self.terminals = list()
 
     def _build(self, train, depth=1):
         # split data where value lower than v and else
@@ -41,10 +42,13 @@ class DecisionTree():
         }
 
         # terminal node
-        _terminal = lambda x: {
-            'value': Counter(x[:, -1]).most_common(),
-            'parent': node,
-        }
+        def _terminal(x):
+            child = {
+                'value': Counter(x[:, -1]).most_common(),
+                'parent': node,
+            }
+            terminals.append(child)
+            return child
 
         if not len(l) or not len(r):
             node['left'] = node['right'] = _terminal(np.concatenate([l, r]))
@@ -54,7 +58,7 @@ class DecisionTree():
             node['left'] = _terminal(l) if len(l) <= self.min_size else self._build(l, depth+1)
             node['right'] = _terminal(r) if len(r) <= self.min_size else self._build(r, depth+1)
             node['left']['parent'] = node['right']['parent'] = node
-            
+
         return node
     
     def _predict(self, node, x):
