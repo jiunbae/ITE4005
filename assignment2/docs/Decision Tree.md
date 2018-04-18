@@ -67,3 +67,9 @@ Run as below
 python3 dt.py (train_file_path) (test_file_path) (result_file_path) [--metric] [--depth] [--minsize] [--mingain] [--feature] [--forest]
 ```
 
+## Performance
+
+|          | Gini   | Entropy | Error  |
+| -------- | ------ | ------- | ------ |
+| dataset0 | 80.00% | 100.00% | 60.00% |
+| dataset1 | 89.02% | 95.66%  | 67.92% |
