@@ -32,7 +32,7 @@ def main(train_file, test_file, result_file, args):
         'gini': Gini,
     }[args.metric], args.feature)
 
-    classifier.fit(x_train, y_train, args.depth, args.minsize)
+    classifier.fit(x_train, y_train, args.depth, args.minsize, args.mingain)
 
     test[y_label] = pd.Series(map(lambda y: labels[y_label][y], classifier.predict(x_test)))
 
@@ -46,9 +46,10 @@ if __name__ == '__main__':
     parser.add_argument("test", help="input file name", type=str)
     parser.add_argument("result", help="output file name", type=str)
 
-    parser.add_argument("--metric", help="select metric to apply", dest='metric', choices=['entropy','error','gini'], default='gini')
-    parser.add_argument("--depth", help="maximum depth of tree", dest='depth', type=int, default=32)
+    parser.add_argument("--metric", help="select metric to apply", dest='metric', choices=['entropy','error','gini'], default='entropy')
+    parser.add_argument("--depth", help="maximum depth of tr1ee", dest='depth', type=int, default=32)
     parser.add_argument("--minsize", help="minimum size of node", dest='minsize', type=int, default=0)
+    parser.add_argument("--mingain", help="minimum gain of node to divide", dest='mingain', type=float, default=.3)
     parser.add_argument("--feature", help="maximum feature count", dest='feature', type=int, default=0)
     args = parser.parse_args()
 

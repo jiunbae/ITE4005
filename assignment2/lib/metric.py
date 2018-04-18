@@ -17,8 +17,9 @@ class Entropy(Metric):
 class ClassError(Metric):
     def calc(self, group):
         if not len(group): return 1
-        return 1-Counter(group[:, -1]).most_common()[0][1]/len(group)
+        return 1.-Counter(group[:, -1]).most_common()[0][1]/len(group)
 
 class Gini(Metric):
     def calc(self, group):
-        return 1-sum([(v/len(group))**2 for v in Counter(group[:, -1]).values()])
+        # print (group.shape, 1.-sum([(v/len(group))**2 for v in Counter(group[:, -1]).values()]))
+        return 1.-sum([(v/len(group))**2 for v in Counter(group[:, -1]).values()])
