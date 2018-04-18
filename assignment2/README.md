@@ -64,5 +64,6 @@ pip3 install -r requirements.txt
 
 Run as below
 ```
-python3 dt.py (train_file_path) (test_file_path) (result_file_path) [--metric as optional]
+python3 dt.py (train_file_path) (test_file_path) (result_file_path) [--metric] [--depth] [--minsize] [--mingain] [--feature] [--forest]
 ```
+
