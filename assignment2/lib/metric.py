@@ -21,5 +21,4 @@ class ClassError(Metric):
 
 class Gini(Metric):
     def calc(self, group):
-        # print (group.shape, 1.-sum([(v/len(group))**2 for v in Counter(group[:, -1]).values()]))
         return 1.-sum([(v/len(group))**2 for v in Counter(group[:, -1]).values()])
