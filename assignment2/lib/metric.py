@@ -7,14 +7,18 @@ class Metric:
     def __init__(self):
         pass
 
+    def calc(self, group):
+        return 0
+
+class Entropy(Metric):
+    def calc(self, group):
+        return -sum([v/len(group)*np.log(v/len(group))/np.log(2) for v in Counter(group[:, -1]).values()])
+
+class ClassError(Metric):
+    def calc(self, group):
+        if not len(group): return 1
+        return 1-Counter(group[:, -1]).most_common()[0][1]/len(group)
+
 class Gini(Metric):
-    def calc(self, groups):
-        return sum([(1.-sum([(v/len(g))**2 for k, v in Counter(g[:, -1]).items()])) * (len(g)/len(list(chain(*groups)))) for g in filter(np.any, groups)])
-
-class InformationGain(Metric):
-    def calc(self, x):
-        pass
-
-class GainRatio(Metric):
-    def calc(self, x):
-        pass
+    def calc(self, group):
+        return 1-sum([(v/len(group))**2 for v in Counter(group[:, -1]).values()])

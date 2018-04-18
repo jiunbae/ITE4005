@@ -4,13 +4,13 @@ from random import sample
 
 import numpy as np
 
-from .metric import Metric
+from .metric import Metric, Gini
 
 class DecisionTree():
     '''Decision Tree
     '''
 
-    def __init__(self, metric, max_feature=0):
+    def __init__(self, metric=Gini, max_feature=0):
         '''DecisionTree with selected metric
 
         @param: metric          metric for determin tree
@@ -21,15 +21,17 @@ class DecisionTree():
     def _build(self, train, depth=1):
         # split data where value lower than v and else
         _split = lambda i, v: (train[np.where(train[:, i] < v)], train[np.where(train[:, i] >= v)])
+        # information gain
+        _gain = lambda groups: sum(map(self.metric, groups))/len(groups)-self.metric(train)
         # _split and calc value using metric
-        _apply = np.vectorize(lambda v, i: self.metric(_split(i, v)))
+        _apply = np.vectorize(lambda v, i: _gain(_split(i, v)))
         # get index of _applyed minimum
         _mini = lambda uni, idx, i: idx[_apply(uni, i).argmin()]
         # terminal node
         _terminal = lambda x: Counter(x[:, -1]).most_common()
         
         m = np.apply_along_axis(lambda i: _mini(*np.unique(train[:, i], return_index=True), i), 1, np.array([self.features]).T)
-        i, j = min(enumerate(m), key=lambda t: self.metric(_split(t[0], train[t[1]][t[0]])))
+        i, j = min(enumerate(m), key=lambda t: _gain(_split(t[0], train[t[1]][t[0]])))
         l, r = _split(i, train[j][i])
         
         node = {
@@ -52,7 +54,7 @@ class DecisionTree():
     def _predict(self, node, x):
         tar = node['left'] if x[node['index']] < node['value'] else node['right']
         return self._predict(tar, x) if isinstance(tar, dict) else tar[0][0]
-    
+
     def fit(self, X, y, max_depth=32, min_size=0):
         '''fit decision tree to input X, y
 
