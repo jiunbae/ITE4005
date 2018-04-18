@@ -27,8 +27,6 @@ class DecisionTree():
         _apply = np.vectorize(lambda v, i: _gain(_split(i, v)))
         # get index of _applyed minimum
         _mini = lambda uni, idx, i: idx[_apply(uni, i).argmin()]
-        # terminal node
-        _terminal = lambda x: Counter(x[:, -1]).most_common()
         
         m = np.apply_along_axis(lambda i: _mini(*np.unique(train[:, i], return_index=True), i), 1, np.array([self.features]).T)
         i, j = min(enumerate(m), key=lambda t: _gain(_split(t[0], train[t[1]][t[0]])))
@@ -39,6 +37,13 @@ class DecisionTree():
             'value': train[j][i],
             'left': l,
             'right': r,
+            'parent': None
+        }
+
+        # terminal node
+        _terminal = lambda x: {
+            'value': Counter(x[:, -1]).most_common(),
+            'parent': node,
         }
 
         if not len(l) or not len(r):
@@ -48,7 +53,8 @@ class DecisionTree():
         else:
             node['left'] = _terminal(l) if len(l) <= self.min_size else self._build(l, depth+1)
             node['right'] = _terminal(r) if len(r) <= self.min_size else self._build(r, depth+1)
-
+            node['left']['parent'] = node['right']['parent'] = node
+            
         return node
     
     def _predict(self, node, x):
