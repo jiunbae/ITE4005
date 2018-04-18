@@ -63,7 +63,7 @@ class DecisionTree():
     
     def _predict(self, node, x):
         tar = node['left'] if x[node['index']] < node['value'] else node['right']
-        return self._predict(tar, x) if isinstance(tar, dict) else tar['value'][0][0]
+        return self._predict(tar, x) if 'index' in tar else tar['value'][0][0]
 
     def fit(self, X, y, max_depth=32, min_size=0):
         '''fit decision tree to input X, y
