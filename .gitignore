@@ -1,0 +1,6 @@
+# Jetbrain idea
+.idea
+
+# Compiled source
+__pycache__/
+*.pyc
