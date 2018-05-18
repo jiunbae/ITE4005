@@ -1,12 +1,24 @@
 #!/bin/python3
 
 import argparse
+from os import path
 
 import pandas as pd
 import numpy as np
 
+from lib.db import DBSCAN
+
 def main(input_file, n, eps, min_pts):
     data = pd.read_csv(input_file, sep='\t', header=None)
+
+    model = DBSCAN(data.values, eps, min_pts)
+
+    base = path.splitext(input_file)[0]
+
+    for key, values in model.get(n):
+        with open(base + '_cluster_' + str(key) + '.txt', 'w') as f:
+            for value in values:
+                f.write(str(int(value)) + '\n')
 
 if __name__ == '__main__':
     # argument parser
