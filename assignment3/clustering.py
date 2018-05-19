@@ -6,7 +6,7 @@ from os import path
 import pandas as pd
 import numpy as np
 
-from lib.db import DBSCAN
+from lib.clustering import DBSCAN
 
 def main(input_file, n, eps, min_pts):
     data = pd.read_csv(input_file, sep='\t', header=None)
