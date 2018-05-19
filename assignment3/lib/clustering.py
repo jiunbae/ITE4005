@@ -25,7 +25,7 @@ class DBSCAN:
     def _grow(self, index, neighbors):
         self.count += 1
         self.labels[index] = self.count
-        for neighbor, *_ in neighbors:
+        for neighbor in neighbors:
             if self.labels[neighbor] == -1:
                 self.labels[neighbor] = self.count
             elif not self.labels[neighbor]:
@@ -36,7 +36,7 @@ class DBSCAN:
 
     def _neighbor(self, index):
         condition = lambda pos: np.linalg.norm(self.data[index] - pos) <= self.eps
-        return [(i, *pos) for i, pos in enumerate(self.data) if condition(pos)]
+        return [i for i, pos in enumerate(self.data) if condition(pos)]
 
     def _dbscan(self):
         for index, _ in enumerate(self.data):
