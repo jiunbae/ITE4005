@@ -6,18 +6,37 @@ from os import path
 import pandas as pd
 
 from lib.clustering import DBSCAN
+from lib.plot import cluster_plot
+from lib.timer import begin, end
 
-def main(input_file, output_path, n, eps, min_pts):
-    data = pd.read_csv(input_file, sep='\t', header=None)
-
-    model = DBSCAN(data.values, eps, min_pts)
-
+def main(input_file, output_path, n, eps, min_pts, image):
+    # Load data
+    data = pd.read_csv(input_file, sep='\t', header=None).values
     base = path.splitext(path.basename(input_file))[0]
+    index, values = data[:, 0], data[:, 1:]
 
-    for key, values in model.get(n):
-        with open(path.join(output_path, base) + '_cluster_' + str(key) + '.txt', 'w') as f:
-            for value in values:
-                f.write(str(int(value)) + '\n')
+    # DBSCAN
+    begin()
+    model = DBSCAN(values, eps, min_pts)
+    clusters = model.clusters
+    time = end()
+
+    print (data.shape, 'input performed in', time)
+    print (n, '/', len(clusters), 'clustered')
+
+    del clusters[-1] # delete outliers
+
+    # Write only top-n clusters
+    for i, (_, objects) in enumerate(sorted(clusters.items(), key=lambda x: -len(x[1]))[:n]):
+        with open(path.join(output_path, base) + '_cluster_' + str(i) + '.txt', 'w') as file:
+            file.write('\n'.join([str(int(index[obj])) for obj in objects]))
+
+    # Save cluster image
+    if image:
+        xs = data[:, 1]
+        ys = data[:, 2]
+        cs = model.labels
+        cluster_plot(path.join(output_path, base + '.png'), xs, ys, cs)
 
 if __name__ == '__main__':
     # argument parser
@@ -34,11 +53,10 @@ if __name__ == '__main__':
     parser.add_argument("min",
                         help="minimum number of points in an Eps-neighborhood of a given point",
                         type=int)
-    parser.add_argument("--output",
-                        help="output file path",
-                        type=str,
-                        default="")
+
+    parser.add_argument("--output", dest="output", help="output file path", type=str, default="")
+    parser.add_argument("--image", dest="image", help="save cluster image", action='store_true')
 
     args = parser.parse_args()
-
-    main(args.input, args.output or path.dirname(args.input), args.n, args.eps, args.min)
+    output = args.output or path.dirname(args.input)
+    main(args.input, output, args.n, args.eps, args.min, args.image)
