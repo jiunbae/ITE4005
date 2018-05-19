@@ -52,14 +52,14 @@ python3 dt.py (input) (n) (eps) (min) [--output output_path] [--image]
 
 ## Performance
 
-![input1](C:\Users\maybe\Documents\Workspace\ITE4005\assignment3\data\input1.png)
+![input1](https://hconnect.hanyang.ac.kr/2018_ITE4005_10035/2018_ITE4005_2015004584/raw/39737d11fe8728ba928b3f5d10b6b9a0f7a57c48/assignment3/data/input1.png)
 
 *input1*
 
-![input2](C:\Users\maybe\Documents\Workspace\ITE4005\assignment3\data\input2.png)
+![input2](https://hconnect.hanyang.ac.kr/2018_ITE4005_10035/2018_ITE4005_2015004584/raw/39737d11fe8728ba928b3f5d10b6b9a0f7a57c48/assignment3/data/input2.png)
 
 *input2*
 
-![input3](C:\Users\maybe\Documents\Workspace\ITE4005\assignment3\data\input3.png)
+![input3](https://hconnect.hanyang.ac.kr/2018_ITE4005_10035/2018_ITE4005_2015004584/raw/39737d11fe8728ba928b3f5d10b6b9a0f7a57c48/assignment3/data/input3.png)
 
 *input3*
