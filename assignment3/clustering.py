@@ -4,19 +4,18 @@ import argparse
 from os import path
 
 import pandas as pd
-import numpy as np
 
 from lib.clustering import DBSCAN
 
-def main(input_file, n, eps, min_pts):
+def main(input_file, output_path, n, eps, min_pts):
     data = pd.read_csv(input_file, sep='\t', header=None)
 
     model = DBSCAN(data.values, eps, min_pts)
 
-    base = path.splitext(input_file)[0]
+    base = path.splitext(path.basename(input_file))[0]
 
     for key, values in model.get(n):
-        with open(base + '_cluster_' + str(key) + '.txt', 'w') as f:
+        with open(path.join(output_path, base) + '_cluster_' + str(key) + '.txt', 'w') as f:
             for value in values:
                 f.write(str(int(value)) + '\n')
 
@@ -35,7 +34,11 @@ if __name__ == '__main__':
     parser.add_argument("min",
                         help="minimum number of points in an Eps-neighborhood of a given point",
                         type=int)
+    parser.add_argument("--output",
+                        help="output file path",
+                        type=str,
+                        default="")
 
     args = parser.parse_args()
 
-    main(args.input, args.n, args.eps, args.min)
+    main(args.input, args.output or path.dirname(args.input), args.n, args.eps, args.min)

@@ -6,7 +6,7 @@ class DBSCAN:
     def __init__(self, data, eps, minpts):
         self.obj = data[:, 0]
         self.pos = data[:, 1:]
-        self.labels = [0] * len(data)
+        self.labels = [None] * len(data)
 
         self.eps = eps
         self.minpts = minpts
@@ -24,7 +24,7 @@ class DBSCAN:
         for neighbor, *_ in neighbors:
             if self.labels[neighbor] == -1:
                 self.labels[neighbor] = self.count
-            elif not self.labels[neighbor]:
+            elif self.labels[neighbor] == None:
                 self.labels[neighbor] = self.count
                 sub_neighbors = self._neighbor(neighbor)
                 if len(sub_neighbors) >= self.minpts:
@@ -41,8 +41,8 @@ class DBSCAN:
             if len(neighbors) < self.minpts:
                 self.labels[index] = -1
             else:
-                self.count += 1
                 self._grow(index, neighbors)
+                self.count += 1
         for obj, label in zip(self.obj, self.labels):
             self.clusters[label].append(obj)
 
