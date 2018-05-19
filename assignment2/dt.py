@@ -16,6 +16,7 @@ from numpy import apply_along_axis as apply
 
 from lib.metric import METRICS
 from lib.tree import DecisionTree
+from lib.forest import RandomForest
 
 
 def main(train_file:str, test_file: str, result_file: str, args: argparse.Namespace) -> None:
@@ -37,29 +38,14 @@ def main(train_file:str, test_file: str, result_file: str, args: argparse.Namesp
     y_train = dataframe.iloc[:len(train)][label]
     x_test = dataframe.iloc[len(train):].drop(label, axis=1)
 
-    # process single tree
-    if args.forest == 1:
-        classifier = DecisionTree(METRICS[args.metric], args.feature)
+    classifier = DecisionTree(METRICS[args.metric], args.feature) 
+    if args.forest > 1:
+        calssifier = RandomForest(DecisionTree, args.forest, METRICS[args.metric], args.feature)
 
-        # fit train data to classifier
-        classifier.fit(x_train, y_train, args.depth, args.minsize, args.mingain)
+    # fit train data to classifier
+    classifier.fit(x_train, y_train, args.depth, args.minsize, args.mingain)
 
-        test[label] = pd.Series(map(lambda y: labels[label][y], classifier.predict(x_test)))
-    # process random forest
-    else:
-        forest = [DecisionTree(METRICS[args.metric], args.feature) for _ in range(args.forest)]
-
-        # duplicate data and shuffle
-        X = np.concatenate([x_train, np.array([y_train]).T], axis=1)
-        dataset = np.concatenate([X] * args.forest)
-        np.random.shuffle(dataset)
-
-        # fit train data to each tree
-        for tree, data in zip(forest, np.array_split(dataset, args.forest)):
-            tree.fit(data[:, :-1], data[:, -1], args.depth, args.minsize, args.mingain)
-
-        pred = np.array([tree.predict(x_test) for tree in forest])
-        test[label] = apply(lambda y: labels[label][Counter(y).most_common()[0][0]], 1, pred.T)
+    test[label] = pd.Series(map(lambda y: labels[label][y], classifier.predict(x_test)))
 
     # write result
     test.to_csv(result_file, sep='\t', index=None)

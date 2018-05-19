@@ -15,10 +15,11 @@ from random import sample
 import numpy as np
 from numpy import apply_along_axis as apply
 
+from .estimator import Estimator
 from .metric import Metric, Gini
 
 
-class DecisionTree():
+class DecisionTree(Estimator):
     """Decision Tree
     """
 
@@ -30,10 +31,10 @@ class DecisionTree():
         :param metric:          metric for determine tree
         :param max_feature:     maximum feature size
         """
+        super().__init__()
         self.metric = metric().calc if issubclass(metric, Metric) else metric
         self.max_feature = max_feature
 
-        self.tree = None
         self.features = list()
         self.max_depth = 32
         self.min_gain = 0
