@@ -1,5 +1,7 @@
 # DBSCAN
 
+Documents in `/doc` for assignment report.
+
 ## Algorithms
 
 **Density-based spatial clustering of applications with noise** (**DBSCAN**) is a data clustering algorithm.
