@@ -19,9 +19,7 @@ def main(input_file, output_path, n, eps, min_pts, image):
     begin()
     model = DBSCAN(values, eps, min_pts)
     clusters = model.clusters
-    time = end()
-
-    print (data.shape, 'input performed in', time)
+    print (data.shape, 'input performed in', end())
     print (n, '/', len(clusters), 'clustered')
 
     del clusters[-1] # delete outliers
