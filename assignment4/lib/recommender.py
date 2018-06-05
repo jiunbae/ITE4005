@@ -18,7 +18,7 @@ class Recommander:
     """
 
     def __init__(self, algorithm=SVD, **kwargs):
-        self.__metric = algorithm(kwargs)
+        self.__metric = algorithm(**kwargs)
 
     def fit(self, 
             X: np.ndarray,
@@ -26,4 +26,4 @@ class Recommander:
         self.__metric.fit(X, y)
 
     def predict(self, X: np.ndarray) -> Any:
-        self.__metric.predict(X)
+        return self.__metric.predict(X)
