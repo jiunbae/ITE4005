@@ -6,11 +6,14 @@ Author: Bae Jiun, Maybe
 
 This module implement decision tree
 """
-
 from typing import Any
 
+import numpy as np
+
+from .algorithms import SVD
+
 class Recommander:
-    def __init__(self, algorithm):
+    def __init__(self, algorithm=SVD()):
         pass
 
     def fit(self, 

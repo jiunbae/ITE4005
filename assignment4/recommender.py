@@ -11,13 +11,13 @@ from os.path import splitext
 
 import pandas as pd
 
-from .lib.recommender import Recommender
+from lib.recommender import Recommander
 
 def main(train_file, test_file):
     train = pd.read_csv(train_file, sep='\t', header=None)
     test = pd.read_csv(test_file, sep='\t', header=None)
 
-    model = Recommender()
+    model = Recommander()
     model.fit(train.values[:, :2], train.values[:, -1])
 
     test['rating'] = pd.Series(model.predict(test.values))
