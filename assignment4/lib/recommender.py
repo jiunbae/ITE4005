@@ -6,6 +6,7 @@ Author: Bae Jiun, Maybe
 
 This module implement decision tree
 """
+
 from typing import Any
 
 import numpy as np
@@ -13,13 +14,16 @@ import numpy as np
 from .algorithms import SVD
 
 class Recommander:
-    def __init__(self, algorithm=SVD()):
-        pass
+    """Recommander
+    """
+
+    def __init__(self, algorithm=SVD, **kwargs):
+        self.__metric = algorithm(kwargs)
 
     def fit(self, 
             X: np.ndarray,
             y: np.ndarray):
-        pass
+        self.__metric.fit(X, y)
 
     def predict(self, X: np.ndarray) -> Any:
-        pass
+        self.__metric.predict(X)
