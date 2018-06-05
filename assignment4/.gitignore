@@ -1,5 +1,7 @@
 *.pyc
 *.pyo
+*.pyd
+*.c
 __pycache__
 *.so
 *.o
