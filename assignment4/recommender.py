@@ -18,10 +18,11 @@ def main(train_file, test_file):
     test = pd.read_csv(test_file, sep='\t', header=None)
 
     model = Recommander()
-    model.fit(train.values[:, :2], train.values[:, -1])
+    model.fit(train.values[:, :2], train.values[:, 2])
 
-    test['rating'] = pd.Series(model.predict(test.values))
-    test.to_csv(splitext(test_file)[0] + '.base_prediction.txt', sep='\t', index=None)
+    test = test.drop(test.columns[-1], axis=1)
+    test[test.columns[-1]] = pd.Series(model.predict(test.values))
+    test.to_csv(splitext(test_file)[0] + '.base_prediction.txt', sep='\t', index=None, header=None)
 
 if __name__ == '__main__':
     # argument parser
