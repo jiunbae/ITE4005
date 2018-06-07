@@ -13,17 +13,17 @@ import numpy as np
 
 from .algorithms import SVD
 
-class Recommander:
-    """Recommander
+class Recommender:
+    """Recommender
     """
 
-    def __init__(self, algorithm=SVD, **kwargs):
-        self.__metric = algorithm(**kwargs)
+    def __init__(self, algorithm=None, **kwargs):
+        self.metric = (algorithm or SVD)(**kwargs)
 
     def fit(self, 
             X: np.ndarray,
             y: np.ndarray):
-        self.__metric.fit(X, y)
+        self.metric.fit(X, y)
 
     def predict(self, X: np.ndarray) -> Any:
-        return self.__metric.predict(X)
+        return self.metric.predict(X)
