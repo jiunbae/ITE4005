@@ -2,6 +2,14 @@ Recommender
 
 Documents in /doc for assignment report.
 
+
+
+## Result
+
+|      | u1    | u2    | u3    | u4    | u5    |
+| ---- | ----- | ----- | ----- | ----- | ----- |
+| RMSE | 0.867 | 0.860 | 0.857 | 0.857 | 0.861 |
+
 ## Requirements
 
 - NumPy: is the fundamental package for scientific computing with Python.
