@@ -32,9 +32,13 @@ cmdclass = {}
 ext = '.pyx' if USE_CYTHON else '.c'
 
 extensions = [
+    # Extension(
+    #     'lib.algorithms.factorization',
+    #     ['lib/algorithms/factorization' + ext],
+    #     include_dirs=[np.get_include()]),
     Extension(
-        'lib.algorithms.factorization',
-        ['lib/algorithms/factorization' + ext],
+        'lib.algorithms.factori',
+        ['lib/algorithms/factori' + ext],
         include_dirs=[np.get_include()]),
 ]
 
