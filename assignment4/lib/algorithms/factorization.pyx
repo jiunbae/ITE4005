@@ -17,9 +17,12 @@ class SVD:
         self.lr = lr
         self.reg = reg
 
-        self.uniques = None
-        self.biases = None
-        self.params = None
+        self.unique_user = None
+        self.unique_item = None
+        self.biase_user = None
+        self.biase_item = None
+        self.param_user = None
+        self.param_item = None
 
     def fit(self,
             X: np.ndarray,
@@ -29,8 +32,8 @@ class SVD:
         cdef list params
 
         cdef np.ndarray[np.long_t] unique_user, unique_item
-        cdef np.ndarray[np.double_t] biase_user, biase_item
-        cdef np.ndarray[np.double_t, ndim=2] param_user, param_item
+        cdef np.double_t[:] biase_user, biase_item
+        cdef np.double_t[:, :] param_user, param_item
 
         cdef int u, i, f
         cdef double r, err, dot, param_userf, param_itemf
@@ -53,14 +56,15 @@ class SVD:
                 u = np.where(unique_user == u)[0][0]
                 i = np.where(unique_item == i)[0][0]
 
-                dot = 0 
-                for f in range(self.factors):
-                    dot += param_item[i, f] * param_user[u, f]
+                # calculate current error
+                dot = sum(param_item[i, f] * param_user[u, f] for f in range(self.factors))
                 err = r - (mean + biase_user[u] + biase_item[i] + dot)
 
+                # update biases
                 biase_user[u] += lr * (err - reg * biase_user[u])
                 biase_item[i] += lr * (err - reg * biase_item[i])
 
+                # update params
                 for f in range(self.factors):
                     param_user[u, f] += lr * (err * param_item[i, f] - reg * param_user[u, f])
                     param_item[i, f] += lr * (err * param_user[u, f] - reg * param_item[i, f])
@@ -77,20 +81,29 @@ class SVD:
     def predict(self, X: np.ndarray) -> np.ndarray:
         cdef np.ndarray[np.double_t] estimate
         cdef double mean = self.mean
+        cdef bint known_user, known_item
+
+        cdef int e, u, i
+        cdef np.ndarray[np.long_t] unique_user = self.unique_user
+        cdef np.ndarray[np.long_t] unique_item = self.unique_item
+        cdef np.double_t[:] biase_user = self.biase_user
+        cdef np.double_t[:] biase_item = self.biase_item
+        cdef np.double_t[:, :] param_user = self.param_user
+        cdef np.double_t[:, :] param_item = self.param_item
 
         estimate = np.full(np.size(X, 0), mean)
         for e, (u, i) in enumerate(X):
-            known_user = u in self.unique_user
-            known_item = i in self.unique_item
+            known_user = u in unique_user
+            known_item = i in unique_item
 
             if known_user:
-                u = np.where(self.unique_user == u)[0][0]
-                estimate[e] += self.biase_user[u]
+                u = np.where(unique_user == u)[0][0]
+                estimate[e] += biase_user[u]
 
             if known_item:
-                i = np.where(self.unique_item == i)[0][0]
-                estimate[e] += self.biase_item[i]
+                i = np.where(unique_item == i)[0][0]
+                estimate[e] += biase_item[i]
 
             if known_user and known_item:
-                estimate[e] += np.dot(self.param_item[i], self.param_user[u])
+                estimate[e] += np.dot(param_item[i], param_user[u])
         return estimate

@@ -15,7 +15,7 @@ from lib import timer
 from lib.accuracy import RMSE
 from lib.recommender import Recommender
 
-def main(train_file, test_file, args):
+def main(train_file: str, test_file: str, args: dict):
     timer.begin()
     # read train, test set
     train = pd.read_csv(train_file, sep='\t', header=None)
@@ -28,7 +28,6 @@ def main(train_file, test_file, args):
     # predict and calculate RMSE
     predicts = model.predict(test.values[:, :2])
     print ('recommender performed in', timer.end())
-    print ('PAs RMSE implementation is wrong!')
     print ('RMSE:', RMSE(predicts, test.values[:, 2]))
 
     # save predictions

@@ -5,5 +5,5 @@ flag = 0
 def begin():
     flag = process_time()
 
-def end():
+def end() -> float:
     return process_time() - flag
