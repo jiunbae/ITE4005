@@ -1,7 +1,5 @@
 # Recommender
 
-Documents in /doc for assignment report.
-
 ## Algorithms
 
 Using **Collaborative Filtering** based on **SVD** to predict rate. 
