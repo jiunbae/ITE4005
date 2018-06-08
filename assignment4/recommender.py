@@ -12,21 +12,29 @@ from time import time
 import pandas as pd
 
 from lib import timer
+from lib.accuracy import RMSE
 from lib.recommender import Recommender
 
 def main(train_file, test_file, args):
     timer.begin()
+    # read train, test set
     train = pd.read_csv(train_file, sep='\t', header=None)
     test = pd.read_csv(test_file, sep='\t', header=None)
 
+    # fit model, using train data
     model = Recommender(**args)
     model.fit(train.values[:, :2], train.values[:, 2])
 
+    # predict and calculate RMSE
     predicts = model.predict(test.values[:, :2])
+    print ('recommender performed in', timer.end())
+    print ('PAs RMSE implementation is wrong!')
+    print ('RMSE:', RMSE(predicts, test.values[:, 2]))
+
+    # save predictions
     test = test.drop(test.columns[-1], axis=1)
     test[test.columns[-1]] = pd.Series(predicts)
     test.to_csv(splitext(test_file)[0] + '.base_prediction.txt', sep='\t', index=None, header=None)
-    print ('recommender performed in', timer.end())
 
 if __name__ == '__main__':
     # argument parser
